@@ -1,5 +1,6 @@
 using FuturoDoTrabalho.Api.Data;
 using FuturoDoTrabalho.Api.Dtos;
+using FuturoDoTrabalho.Api.Enums;
 using FuturoDoTrabalho.Api.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -51,6 +52,13 @@ namespace FuturoDoTrabalho.Api.Services
                     return (false, "Usuário ou email já cadastrado", null);
                 }
 
+                // Parse do perfil fornecido no request, caso inválido usa padrão
+                var perfil = UserRole.Funcionario;
+                if (Enum.TryParse<UserRole>(request.Perfil, ignoreCase: true, out var perfilParsed))
+                {
+                    perfil = perfilParsed;
+                }
+
                 // Criar novo usuário
                 var usuario = new Usuario
                 {
@@ -58,6 +66,7 @@ namespace FuturoDoTrabalho.Api.Services
                     Email = request.Email,
                     NomeCompleto = request.NomeCompleto,
                     SenhaHash = HasharSenha(request.Senha),
+                    Perfil = perfil,
                     Ativo = true,
                     DataCriacao = DateTime.UtcNow
                 };
@@ -65,7 +74,7 @@ namespace FuturoDoTrabalho.Api.Services
                 _context.Usuarios.Add(usuario);
                 await _context.SaveChangesAsync();
 
-                _logger.LogInformation("Usuário {NomeUsuario} registrado com sucesso", request.NomeUsuario);
+                _logger.LogInformation("Usuário {NomeUsuario} registrado com sucesso com perfil {Perfil}", request.NomeUsuario, perfil);
 
                 // Gerar token
                 var token = GerarToken(usuario);
@@ -170,6 +179,7 @@ namespace FuturoDoTrabalho.Api.Services
                     new System.Security.Claims.Claim("nomeUsuario", usuario.NomeUsuario),
                     new System.Security.Claims.Claim("email", usuario.Email),
                     new System.Security.Claims.Claim("perfil", usuario.Perfil.ToString()),
+                    new System.Security.Claims.Claim(System.Security.Claims.ClaimTypes.Role, usuario.Perfil.ToString()),
                     new System.Security.Claims.Claim("nomeCompleto", usuario.NomeCompleto)
                 }),
                 Expires = DateTime.UtcNow.AddMinutes(expiracaoMinutos),

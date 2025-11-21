@@ -54,6 +54,10 @@ namespace FuturoDoTrabalho.Api.Dtos
         [Required(ErrorMessage = "Nome completo é obrigatório")]
         [StringLength(150)]
         public string NomeCompleto { get; set; } = string.Empty;
+
+        // User role/profile - optional field, defaults to Funcionario
+        [StringLength(50)]
+        public string Perfil { get; set; } = "Funcionario";
     }
 
     // ====================
