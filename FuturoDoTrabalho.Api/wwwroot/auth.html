@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autenticação - GD Solutions</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .form-container {
+            padding: 40px;
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .form-header h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 24px;
+        }
+
+        .form-header p {
+            color: #999;
+            font-size: 14px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            color: #999;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .tab-button.active {
+            color: #667eea;
+        }
+
+        .tab-button.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #667eea;
+        }
+
+        .tab-button:hover {
+            color: #667eea;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-group input::placeholder {
+            color: #ccc;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+            margin-bottom: 15px;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .message {
+            padding: 12px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            display: block;
+        }
+
+        .message.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+            display: block;
+        }
+
+        .token-display {
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 20px;
+            max-height: 200px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            color: #333;
+            word-break: break-all;
+            display: none;
+        }
+
+        .token-display.show {
+            display: block;
+        }
+
+        .token-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .token-actions button {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ddd;
+            background: white;
+            color: #667eea;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .token-actions button:hover {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .form-section {
+            display: none;
+        }
+
+        .form-section.active {
+            display: block;
+        }
+
+        .help-text {
+            color: #999;
+            font-size: 13px;
+            margin-top: 5px;
+        }
+
+        .divider {
+            text-align: center;
+            margin: 20px 0;
+            color: #999;
+            font-size: 14px;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            display: inline-block;
+            width: 40%;
+            height: 1px;
+            background: #ddd;
+            vertical-align: middle;
+        }
+
+        .divider::before {
+            margin-right: 10px;
+        }
+
+        .divider::after {
+            margin-left: 10px;
+        }
+
+        .swagger-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .swagger-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .swagger-link a:hover {
+            text-decoration: underline;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            color: #667eea;
+            font-size: 14px;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 600px) {
+            .form-container {
+                padding: 30px;
+            }
+
+            .form-header h1 {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="form-container">
+            <div class="form-header">
+                <h1>🔐 Autenticação</h1>
+                <p>GD Solutions - Gestão de Funcionários</p>
+            </div>
+
+            <div class="message" id="message"></div>
+
+            <div class="tabs">
+                <button class="tab-button active" onclick="switchTab('register')">Registrar</button>
+                <button class="tab-button" onclick="switchTab('login')">Login</button>
+            </div>
+
+            <!-- FORMULÁRIO DE REGISTRO -->
+            <div id="register" class="form-section active">
+                <div class="form-group">
+                    <label for="registerName">Nome Completo</label>
+                    <input type="text" id="registerName" placeholder="Ex: João Silva" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="registerUsername">Usuário</label>
+                    <input type="text" id="registerUsername" placeholder="Ex: joao.silva" required>
+                    <p class="help-text">Mínimo 3 caracteres, sem espaços</p>
+                </div>
+
+                <div class="form-group">
+                    <label for="registerEmail">Email</label>
+                    <input type="email" id="registerEmail" placeholder="Ex: joao@exemplo.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="registerPassword">Senha</label>
+                    <input type="password" id="registerPassword" placeholder="Mínimo 6 caracteres" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="registerRole">Perfil</label>
+                    <select id="registerRole" required>
+                        <option value="">Selecione um perfil</option>
+                        <option value="Funcionario">Funcionário</option>
+                        <option value="Gerente">Gerente</option>
+                        <option value="Admin">Admin</option>
+                    </select>
+                    <p class="help-text">Selecione o nível de acesso do usuário</p>
+                </div>
+
+                <div class="loading" id="registerLoading">
+                    <span class="spinner"></span>Registrando...
+                </div>
+
+                <button class="btn btn-primary" onclick="registrar()">Registrar Conta</button>
+
+                <div class="divider">OU</div>
+
+                <p style="text-align: center; color: #999; font-size: 14px;">
+                    Já tem uma conta? <button onclick="switchTab('login')" style="background: none; border: none; color: #667eea; cursor: pointer; font-weight: 600;">Faça login</button>
+                </p>
+            </div>
+
+            <!-- FORMULÁRIO DE LOGIN -->
+            <div id="login" class="form-section">
+                <div class="form-group">
+                    <label for="loginUsername">Usuário ou Email</label>
+                    <input type="text" id="loginUsername" placeholder="Ex: joao.silva ou joao@exemplo.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="loginPassword">Senha</label>
+                    <input type="password" id="loginPassword" placeholder="Sua senha" required>
+                </div>
+
+                <div class="loading" id="loginLoading">
+                    <span class="spinner"></span>Autenticando...
+                </div>
+
+                <button class="btn btn-primary" onclick="login()">Fazer Login</button>
+
+                <div id="tokenDisplay" class="token-display">
+                    <strong>Token JWT:</strong><br><br>
+                    <span id="tokenValue"></span>
+                    <div class="token-actions">
+                        <button onclick="copiarToken()">📋 Copiar</button>
+                        <button onclick="fecharToken()">✕ Fechar</button>
+                    </div>
+                </div>
+
+                <div class="divider">OU</div>
+
+                <p style="text-align: center; color: #999; font-size: 14px;">
+                    Não tem uma conta? <button onclick="switchTab('register')" style="background: none; border: none; color: #667eea; cursor: pointer; font-weight: 600;">Registre-se</button>
+                </p>
+            </div>
+
+            <div class="swagger-link">
+                <a href="/swagger">📚 Ver Swagger UI</a> • <a href="/">🏠 Voltar</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:5000/api';
+
+        function switchTab(tab) {
+            // Remover active de todos os botões e seções
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.form-section').forEach(sec => sec.classList.remove('active'));
+
+            // Adicionar active ao selecionado
+            event.target.classList.add('active');
+            document.getElementById(tab).classList.add('active');
+
+            // Limpar mensagens
+            showMessage('', '');
+        }
+
+        function showMessage(msg, type) {
+            const msgElement = document.getElementById('message');
+            if (msg) {
+                msgElement.textContent = msg;
+                msgElement.className = `message ${type}`;
+                msgElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            } else {
+                msgElement.className = 'message';
+                msgElement.textContent = '';
+            }
+        }
+
+        async function registrar() {
+            const nome = document.getElementById('registerName').value.trim();
+            const username = document.getElementById('registerUsername').value.trim();
+            const email = document.getElementById('registerEmail').value.trim();
+            const password = document.getElementById('registerPassword').value;
+            const role = document.getElementById('registerRole').value;
+
+            // Validações básicas
+            if (!nome || !username || !email || !password || !role) {
+                showMessage('Por favor, preencha todos os campos', 'error');
+                return;
+            }
+
+            if (username.length < 3) {
+                showMessage('O usuário deve ter no mínimo 3 caracteres', 'error');
+                return;
+            }
+
+            if (password.length < 6) {
+                showMessage('A senha deve ter no mínimo 6 caracteres', 'error');
+                return;
+            }
+
+            // Mostrar loading
+            document.getElementById('registerLoading').classList.add('show');
+
+            try {
+                const response = await fetch(`${API_BASE}/autenticacao/registrar`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        nomeCompleto: nome,
+                        nomeUsuario: username,
+                        email: email,
+                        senha: password,
+                        perfil: role
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showMessage('✓ Conta criada com sucesso! Você pode fazer login agora.', 'success');
+                    
+                    // Limpar formulário
+                    document.getElementById('registerName').value = '';
+                    document.getElementById('registerUsername').value = '';
+                    document.getElementById('registerEmail').value = '';
+                    document.getElementById('registerPassword').value = '';
+                    document.getElementById('registerRole').value = '';
+
+                    // Mudar para aba de login após 2 segundos
+                    setTimeout(() => {
+                        document.querySelectorAll('.tab-button')[1].click();
+                    }, 2000);
+                } else {
+                    showMessage(data.message || 'Erro ao registrar. Tente novamente.', 'error');
+                }
+            } catch (error) {
+                showMessage('Erro de conexão. Verifique se a API está rodando.', 'error');
+                console.error('Erro:', error);
+            } finally {
+                document.getElementById('registerLoading').classList.remove('show');
+            }
+        }
+
+        async function login() {
+            const username = document.getElementById('loginUsername').value.trim();
+            const password = document.getElementById('loginPassword').value;
+
+            if (!username || !password) {
+                showMessage('Por favor, preencha todos os campos', 'error');
+                return;
+            }
+
+            // Mostrar loading
+            document.getElementById('loginLoading').classList.add('show');
+
+            try {
+                const response = await fetch(`${API_BASE}/autenticacao/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        nomeUsuario: username,
+                        email: username, // Enviar como email também (API aceita ambos)
+                        senha: password
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.data && data.data.token) {
+                    showMessage('✓ Login realizado com sucesso!', 'success');
+                    
+                    // Mostrar token
+                    document.getElementById('tokenValue').textContent = data.data.token;
+                    document.getElementById('tokenDisplay').classList.add('show');
+
+                    // Armazenar token no localStorage
+                    localStorage.setItem('authToken', data.data.token);
+                    localStorage.setItem('usuario', JSON.stringify(data.data.usuario));
+
+                    // Limpar senha
+                    document.getElementById('loginPassword').value = '';
+
+                    showMessage('Token salvo no localStorage. Use-o para acessar endpoints protegidos!', 'info');
+                } else {
+                    showMessage(data.message || 'Usuário ou senha inválidos', 'error');
+                }
+            } catch (error) {
+                showMessage('Erro de conexão. Verifique se a API está rodando.', 'error');
+                console.error('Erro:', error);
+            } finally {
+                document.getElementById('loginLoading').classList.remove('show');
+            }
+        }
+
+        function copiarToken() {
+            const token = document.getElementById('tokenValue').textContent;
+            navigator.clipboard.writeText(token).then(() => {
+                showMessage('✓ Token copiado para a área de transferência!', 'success');
+            }).catch(() => {
+                showMessage('Erro ao copiar token', 'error');
+            });
+        }
+
+        function fecharToken() {
+            document.getElementById('tokenDisplay').classList.remove('show');
+        }
+
+        // Carregar token salvo se existir
+        window.addEventListener('load', () => {
+            const token = localStorage.getItem('authToken');
+            const usuario = localStorage.getItem('usuario');
+            
+            if (token && usuario) {
+                const user = JSON.parse(usuario);
+                showMessage(`Bem-vindo de volta, ${user.nomeCompleto}!`, 'info');
+            }
+        });
+
+        // Permitir Enter para submeter formulários
+        document.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                const activeSection = document.querySelector('.form-section.active');
+                if (activeSection.id === 'register') {
+                    registrar();
+                } else if (activeSection.id === 'login') {
+                    login();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
