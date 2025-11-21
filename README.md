@@ -1,51 +1,21 @@
 # GD Solutions API - Futuro do Trabalho
 
+> **Observação:** Este projeto é uma **adaptação da entrega da matéria de C#**, reutilizada e expandida para atender aos requisitos da disciplina de SOA.
+
+## 📌 Sobre o Projeto
 A GD Solutions desenvolve soluções voltadas para modernizar a gestão de pessoas e apoiar empresas na transição para o Futuro do Trabalho, um cenário marcado por digitalização, trabalho híbrido e uso intensivo de dados para tomada de decisão.
 
 Esta API oferece uma base estruturada e segura para o gerenciamento de funcionários, departamentos e autenticação de usuários, permitindo que sistemas corporativos realizem operações de forma organizada, segura e escalável.
 
-## Arquitetura e Tecnologias
 
-A API foi projetada seguindo princípios de:
 
-- **Segurança STATELESS** com autenticação JWT
-- **Autorização baseada em Roles/Perfis** de usuário
-- **Tratamento centralizado de exceções**
-- **Respostas padronizadas** com Response Entity
-- **Organização modular** baseada em serviços mínimos e independentes
-- **API Versionamento** (v1 e v2) para evolução sem quebra de compatibilidade
-
-### Stack Tecnológico
-
-| Tecnologia | Versão | Propósito |
-|-----------|--------|----------|
-| .NET | 9.0 | Runtime |
-| ASP.NET Core | 9.0 | Framework Web |
-| Entity Framework Core | 9.0 | ORM e Data Access |
-| MySQL | 8.0+ | Banco de Dados |
-| AutoMapper | 12.0.1 | Mapeamento de objetos |
-| JWT Bearer | 9.0.0 | Autenticação |
-| Swagger/OpenAPI | 6.6.2 | Documentação interativa |
-
-### Padrões de Arquitetura
-
-- **Repository Pattern** - Abstrair acesso aos dados
-- **Service Pattern** - Encapsular lógica de negócio
-- **DTO Pattern** - Transferência de dados segura
-- **Dependency Injection** - IoC container nativo do ASP.NET
-- **Value Objects** - Encapsular validações complexas (CPF, Email)
-- **Middleware Pattern** - Tratamento centralizado de exceções
-
----
-
-## Guia de Início Rápido
+## 🚀 Início Rápido
 
 ### Pré-requisitos
 
 - **.NET 9.0+** - [Baixar](https://dotnet.microsoft.com/download/dotnet/9.0)
 - **MySQL 8.0+** - [Baixar](https://dev.mysql.com/downloads/mysql/)
 - **Git** - [Baixar](https://git-scm.com/)
-- **Postman** (opcional) - [Baixar](https://www.postman.com/)
 
 ### 1. Clonar o Repositório
 
@@ -56,7 +26,6 @@ cd FuturoDoTrabalho.Api
 ```
 
 ### 2. Restaurar Dependências
-
 ```bash
 dotnet restore
 ```
@@ -97,137 +66,42 @@ dotnet run
 
 A API será iniciada em: `https://localhost:5000` (ou a porta exibida no console)
 
-### 6. Acessar Swagger UI
+### 6. Acessar API
 
 Abra no navegador:
 
 ```
-http://localhost:5000
+http://localhost:5000/auth.html
 ```
 
-Você verá a documentação interativa com todas as rotas disponíveis.
+Você verá uma tela de cadastro e login.
+
+### 7. Crie seu usuário e faça login para obter o token JWT necessário para acessar os endpoints protegidos.
+
+Realize o cadastro e login para obter o token JWT necessário para acessar os endpoints protegidos da API. Copie o token retornado na resposta de login, pois ele será necessário para autenticar suas requisições.
+
+### 8. Acesse o Swagger UI
+
+Abra no navegador:
+
+```
+http://localhost:5000/swagger/index.html
+```
+
+ou apenas clique no botão abaixo da tela de login "Ver Swagger UI".
+
+### 9. Coloque seu token JWT no Swagger
+
+Clique no botão **"Authorize"** (cadeado 🔓 no topo direito) e cole o token JWT.
+
+### 10. Teste os Endpoints
+
+Agora você pode testar todos os endpoints protegidos da API diretamente pelo Swagger UI!
 
 ---
 
-## Autenticação e Autorização
 
-### 1. Registrar um Novo Usuário
-
-**POST** `/api/autenticacao/registrar`
-
-```bash
-curl -X POST http://localhost:5015/api/autenticacao/registrar \
-  -H "Content-Type: application/json" \
-  -d '{
-    "nomeUsuario": "joao.silva",
-    "email": "joao@empresa.com",
-    "senha": "Senha@123",
-    "nomeCompleto": "João Silva"
-  }'
-```
-
-**Resposta de Sucesso (200 OK):**
-
-```json
-{
-  "success": true,
-  "message": "Usuário registrado com sucesso",
-  "data": {
-    "usuarioId": 1,
-    "nomeUsuario": "joao.silva",
-    "email": "joao@empresa.com",
-    "nomeCompleto": "João Silva",
-    "perfil": "Funcionario",
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-    "expiracaoToken": "2025-11-20T12:30:00Z"
-  },
-  "timestamp": "2025-11-20T11:30:00Z"
-}
-```
-
-### 2. Fazer Login
-
-**POST** `/api/autenticacao/login`
-
-```bash
-curl -X POST http://localhost:5015/api/autenticacao/login \
-  -H "Content-Type: application/json" \
-  -d '{
-    "nomeUsuario": "joao.silva",
-    "senha": "Senha@123"
-  }'
-```
-
-**Resposta:**
-
-```json
-{
-  "success": true,
-  "message": "Login realizado com sucesso",
-  "data": {
-    "usuarioId": 1,
-    "nomeUsuario": "joao.silva",
-    "email": "joao@empresa.com",
-    "nomeCompleto": "João Silva",
-    "perfil": "Funcionario",
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-    "expiracaoToken": "2025-11-20T12:30:00Z"
-  },
-  "timestamp": "2025-11-20T11:30:00Z"
-}
-```
-
-**⚠️ IMPORTANTE:** Copie o valor do campo `token`. Você precisará desse token em todas as requisições protegidas.
-
-### 3. Usar o Token em Requisições
-
-Todas as rotas (exceto `/api/autenticacao/registrar` e `/api/autenticacao/login`) requerem autenticação.
-
-Adicione o token no header `Authorization`:
-
-```bash
-curl -X GET http://localhost:5015/api/v1/funcionario \
-  -H "Authorization: Bearer SEU_TOKEN_AQUI"
-```
-
-### 4. Testes via Swagger UI (Recomendado)
-
-**Passo 1:** Abra `http://localhost:5015`
-
-**Passo 2:** Clique em "Try it out" no endpoint `/api/autenticacao/registrar`:
-```
-POST /api/autenticacao/registrar
-```
-
-**Passo 3:** Preencha o Request Body:
-```json
-{
-  "nomeUsuario": "usuario_teste",
-  "email": "usuario@teste.com",
-  "senha": "Teste@123",
-  "nomeCompleto": "Usuário Teste"
-}
-```
-
-**Passo 4:** Clique em "Execute" e copie o `token` da resposta
-
-**Passo 5:** Clique no botão **"Authorize"** (cadeado 🔓 no topo direito)
-
-**Passo 6:** Cole o token (sem a palavra "Bearer"):
-```
-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-```
-
-**Passo 7:** Clique em "Authorize" e depois "Close"
-
-**Passo 8:** Agora você pode testar os endpoints protegidos! Tente:
-- **GET** `/api/v1/funcionario` - Listar funcionários
-- **POST** `/api/v1/departamento` - Criar departamento (se for Admin)
-- **DELETE** `/api/v1/funcionario/{id}` - Deletar (se for Admin)
-
----
-
-## Perfis/Roles e Autorização
+## 🧩 Perfis/Roles e Autorização
 
 Cada usuário tem um perfil que define suas permissões:
 
@@ -236,7 +110,6 @@ Cada usuário tem um perfil que define suas permissões:
 | **Admin** | ✅ | ✅ | ✅ | ✅ | ✅ |
 | **Gerente** | ✅ | ✅ | ✅ | ✅ | ❌ |
 | **Funcionario** | ✅ | ❌ | ❌ | ❌ | ❌ |
-| **Viewer** | ✅ | ❌ | ❌ | ❌ | ❌ |
 
 ### Como Alterar o Perfil de um Usuário
 
@@ -250,13 +123,12 @@ UPDATE usuarios SET Perfil = 'Admin' WHERE NomeUsuario = 'joao.silva';
 - `Admin` - Acesso completo
 - `Gerente` - Pode criar, ler e atualizar
 - `Funcionario` - Apenas leitura
-- `Viewer` - Apenas leitura (alias para Funcionario)
 
 ---
 
-## Endpoints da API
+## 🔗 Endpoints da API
 
-### Autenticação (SEM AUTENTICAÇÃO)
+### 🔓 Autenticação (SEM AUTENTICAÇÃO)
 
 | Método | Rota | Descrição |
 |--------|------|-----------|
@@ -264,9 +136,9 @@ UPDATE usuarios SET Perfil = 'Admin' WHERE NomeUsuario = 'joao.silva';
 | **POST** | `/api/autenticacao/login` | Login e obter token JWT |
 | **GET** | `/api/autenticacao/verificar-token` | Verificar se token é válido |
 
-### Funcionários v1 (Básica)
+### v1 - Básica
+Endpoints: `/api/v1/funcionario` e `/api/v1/departamento`
 
-**Base:** `/api/v1/funcionario` (Requer autenticação)
 
 | Método | Rota | Roles | Descrição |
 |--------|------|-------|-----------|
@@ -276,9 +148,7 @@ UPDATE usuarios SET Perfil = 'Admin' WHERE NomeUsuario = 'joao.silva';
 | **PUT** | `/{id}` | Admin, Gerente | Atualizar funcionário |
 | **DELETE** | `/{id}` | Admin | Deletar funcionário |
 
-### Funcionários v2 (Avançada)
-
-**Base:** `/api/v2/funcionario` (Requer autenticação)
+### v2 - Avançada
 
 Inclui tudo da v1 mais:
 
@@ -287,61 +157,27 @@ Inclui tudo da v1 mais:
 | **GET** | `/?pageNumber=1&pageSize=10&ativo=true` | Todos | Listar com paginação |
 | **PATCH** | `/{id}` | Admin, Gerente | Atualizar parcialmente |
 
-### Departamentos v1 (Básica)
-
-**Base:** `/api/v1/departamento` (Requer autenticação)
-
-| Método | Rota | Roles | Descrição |
-|--------|------|-------|-----------|
-| **GET** | `/` | Todos | Listar departamentos |
-| **GET** | `/{id}` | Todos | Obter departamento específico |
-| **POST** | `/` | Admin | Criar novo |
-| **PUT** | `/{id}` | Admin, Gerente | Atualizar |
-| **DELETE** | `/{id}` | Admin | Deletar |
-
-### Departamentos v2 (Avançada)
-
-**Base:** `/api/v2/departamento` (Requer autenticação)
-
-Inclui tudo da v1 mais:
-
-| Método | Rota | Roles | Descrição |
-|--------|------|-------|-----------|
-| **GET** | `/?pageNumber=1&pageSize=10` | Todos | Listar com paginação |
-| **PATCH** | `/{id}` | Admin, Gerente | Atualizar parcialmente |
-
 ---
 
-## Exemplos de Uso
+## 📚 Exemplos de Uso
 
 ### Exemplo 1: Fluxo Completo no Swagger UI
 
-1. Abra `http://localhost:5015`
-2. Procure por `/api/autenticacao/registrar`
-3. Clique "Try it out" e preencha os dados:
-   ```json
-   {
-     "nomeUsuario": "admin",
-     "email": "admin@empresa.com",
-     "senha": "Admin@123",
-     "nomeCompleto": "Administrador"
-   }
-   ```
-4. Execute e copie o token
-5. Clique em Authorize (cadeado) e cole o token
-6. Agora teste endpoints como GET `/api/v1/funcionario`
+1. Após fazer cadastro/login em `http://localhost:5000/auth.html`, abra `http://localhost:5000/swagger/index.html`
+2. Procure por `Authentication` e insira seu token JWT
+3. Agora teste endpoints como GET `/api/v1/funcionario`
 
 ### Exemplo 2: Criar um Funcionário (Command Line)
 
 ```bash
 # 1. Login para obter token
-TOKEN=$(curl -s -X POST http://localhost:5015/api/autenticacao/login \
+TOKEN=$(curl -s -X POST http://localhost:5000/api/autenticacao/login \
   -H "Content-Type: application/json" \
   -d '{"nomeUsuario":"admin","senha":"Admin@123"}' \
   | grep -o '"token":"[^"]*' | cut -d'"' -f4)
 
 # 2. Criar funcionário
-curl -X POST http://localhost:5015/api/v1/funcionario \
+curl -X POST http://localhost:5000/api/v1/funcionario \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $TOKEN" \
   -d '{
@@ -358,14 +194,14 @@ curl -X POST http://localhost:5015/api/v1/funcionario \
 ### Exemplo 3: Listar com Paginação (v2)
 
 ```bash
-curl -X GET "http://localhost:5015/api/v2/funcionario?pageNumber=1&pageSize=10&ativo=true" \
+curl -X GET "http://localhost:5000/api/v2/funcionario?pageNumber=1&pageSize=10&ativo=true" \
   -H "Authorization: Bearer SEU_TOKEN"
 ```
 
 ### Exemplo 4: Atualizar Parcialmente (PATCH)
 
 ```bash
-curl -X PATCH http://localhost:5015/api/v2/funcionario/1 \
+curl -X PATCH http://localhost:5000/api/v2/funcionario/1 \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer SEU_TOKEN" \
   -d '{"salario": 6000}'
@@ -373,11 +209,11 @@ curl -X PATCH http://localhost:5015/api/v2/funcionario/1 \
 
 ---
 
-## Formato de Respostas
+## 📤 Formato de Respostas
 
 Todas as respostas da API seguem um padrão consistente:
 
-### Resposta de Sucesso
+### ✅ Resposta de Sucesso
 
 ```json
 {
@@ -390,7 +226,7 @@ Todas as respostas da API seguem um padrão consistente:
 }
 ```
 
-### Resposta de Erro
+### ❌ Resposta de Erro
 
 ```json
 {
@@ -400,7 +236,7 @@ Todas as respostas da API seguem um padrão consistente:
 }
 ```
 
-### Status Codes HTTP
+### 📡 Status Codes HTTP
 
 | Código | Significado |
 |--------|------------|
@@ -415,9 +251,9 @@ Todas as respostas da API seguem um padrão consistente:
 
 ---
 
-## Configurações Importantes
+## 🛠️ Configurações Importantes
 
-### JWT (em `appsettings.json`)
+### 🔑 JWT (em `appsettings.json`)
 
 ```json
 {
@@ -430,12 +266,8 @@ Todas as respostas da API seguem um padrão consistente:
 }
 ```
 
-**⚠️ IMPORTANTE:** 
-- Em produção, use uma chave secreta muito forte
-- Armazene em variáveis de ambiente
-- Nunca faça commit da chave secreta
 
-### Banco de Dados
+### 🗄️ Banco de Dados
 
 ```json
 {
@@ -447,7 +279,32 @@ Todas as respostas da API seguem um padrão consistente:
 
 ---
 
-## Estrutura do Projeto
+## 🧰 Comandos Úteis
+
+```bash
+# Compilar
+dotnet build
+
+# Executar
+dotnet run
+
+# Criar migration
+dotnet ef migrations add NomeMigracao
+
+# Aplicar migrations
+dotnet ef database update
+
+# Desfazer
+dotnet ef migrations remove
+
+# Recriar banco
+dotnet ef database drop --force
+dotnet ef database update
+```
+
+---
+
+## 📁 Estrutura do Projeto
 
 ```
 FuturoDoTrabalho.Api/
@@ -473,32 +330,44 @@ FuturoDoTrabalho.Api/
 
 ---
 
-## Comandos Úteis
+## 🧱 Arquitetura e Tecnologias
 
-```bash
-# Compilar
-dotnet build
+A API foi projetada seguindo princípios de:
 
-# Executar
-dotnet run
-
-# Criar migration
-dotnet ef migrations add NomeMigracao
-
-# Aplicar migrations
-dotnet ef database update
-
-# Desfazer
-dotnet ef migrations remove
-
-# Recriar banco
-dotnet ef database drop --force
-dotnet ef database update
-```
+- **Segurança STATELESS** com autenticação JWT
+- **Autorização baseada em Roles/Perfis** de usuário
+- **Tratamento centralizado de exceções**
+- **Respostas padronizadas** com Response Entity
+- **Organização modular** baseada em serviços mínimos e independentes
+- **API Versionamento** (v1 e v2) para evolução sem quebra de compatibilidade
 
 ---
 
-## Integrantes
+### Tecnologias Utilizadas
+
+| Tecnologia | Versão | Propósito |
+|-----------|--------|----------|
+| .NET | 9.0 | Runtime |
+| ASP.NET Core | 9.0 | Framework Web |
+| Entity Framework Core | 9.0 | ORM e Data Access |
+| MySQL | 8.0+ | Banco de Dados |
+| AutoMapper | 12.0.1 | Mapeamento de objetos |
+| JWT Bearer | 9.0.0 | Autenticação |
+| Swagger/OpenAPI | 6.6.2 | Documentação interativa |
+
+### Padrões de Arquitetura
+
+- **Repository Pattern** - Abstrair acesso aos dados
+- **Service Pattern** - Encapsular lógica de negócio
+- **DTO Pattern** - Transferência de dados segura
+- **Dependency Injection** - IoC container nativo do ASP.NET
+- **Value Objects** - Encapsular validações complexas (CPF, Email)
+- **Middleware Pattern** - Tratamento centralizado de exceções
+
+---
+
+
+## 🧑‍💻 Integrantes
 
 - Adriano Lopes - RM98574
 - Henrique de Brito - RM98831
