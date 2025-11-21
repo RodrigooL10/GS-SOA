@@ -35,24 +35,26 @@ dotnet restore
 #### Criar o banco MySQL (Windows CMD ou PowerShell):
 
 ```bash
-mysql -u root -padmin12@ -e "CREATE DATABASE futuro_trabalho_dev CHARACTER SET utf8mb4;"
+mysql -u root -padmin12@ -e "CREATE DATABASE futuro_trabalho CHARACTER SET utf8mb4;"
 ```
 
 **Nota:** Se sua senha MySQL é diferente, substitua `admin12@` pela sua senha.
 
-#### Atualizar ConnectionString em `appsettings.Development.json`:
+#### Atualizar ConnectionString em `appsettings.Development.json` e `appsettings.json`:
 
 ```json
 {
   "ConnectionStrings": {
-    "DefaultConnection": "Server=localhost;Port=3306;Database=futuro_trabalho_dev;User=root;Password=SUA_SENHA_AQUI;"
+    "DefaultConnection": "Server=localhost;Port=3306;Database=futuro_trabalho;User=root;Password=SUA_SENHA_AQUI;"
   }
 }
 ```
 
-### 4. Aplicar Migrations (Criar Tabelas)
+### 4. Criar e aplicar Migrations (Criar Tabelas)
 
 ```bash
+dotnet ef migrations add Initial 
+
 dotnet ef database update
 ```
 
